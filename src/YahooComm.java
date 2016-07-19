@@ -7,13 +7,35 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.Scanner;
 import java.lang.*;
 
-
 public class YahooComm {
+/*public void getXMLDatforURL(String RequestURL)
+	{
+		try 
+		{
+			URL requrl = new URL(RequestURL);
+			try 
+			{
+				InputStream xmlStream = requrl.openStream();
+				String XmlData = xmlStream.toString();
+				xmlStream.close();
+			}
+			catch(IOException ex)
+			{
+				ex.printStackTrace();
+			}
+		}
+		catch(MalformedURLException ex)
+		{
+			ex.printStackTrace();
+		}
+		
+	}*/
 	
-public String getXMLDatforURL(String url, int mode ) throws IOException{
+public String getXMLDatforURL(String url, int mode) throws IOException{
 		
 	String JSONresponse = null;
 	try 
@@ -36,27 +58,33 @@ public String getXMLDatforURL(String url, int mode ) throws IOException{
 	        }
 	        else
 	        {
-	        		// Set the HTTP Request type method to GET (Default: GET)
-	        
+		        // Set the HTTP Request type method to GET (Default: GET)
 		        con.setRequestMethod("GET");
 
 		        // Created a BufferedReader to read the contents of the request.
-		        BufferedReader in = new BufferedReader(
-		                new InputStreamReader(con.getInputStream()));
-		        String inputLine;
-		        StringBuilder response = new StringBuilder();
+		        try 
+		        {
+		        	BufferedReader in = new BufferedReader(
+		        			new InputStreamReader(con.getInputStream()));
+		        	String inputLine;
+			        StringBuilder response = new StringBuilder();
 
-		        while ((inputLine = in.readLine()) != null) {
-		            response.append(inputLine);
+			        while ((inputLine = in.readLine()) != null) {
+			            response.append(inputLine);
+			        }
+
+			        // MAKE SURE TO CLOSE YOUR CONNECTION!
+			        in.close();
+			        JSONresponse = response.toString();
 		        }
-
-		        // MAKE SURE TO CLOSE YOUR CONNECTION!
-		        in.close();
-
+		        catch(UnknownHostException ex)
+		        {
+		        	return null;
+		        }
+		        
 		        // response is the contents of the XML
-		        //System.out.println(response.toString());
-		        JSONresponse = response.toString();
-	        }   
+		        //System.out.println(response.toString());      
+	        } 
 		} 
 		catch (Exception ex) {
 			ex.printStackTrace();

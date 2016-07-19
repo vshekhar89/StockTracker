@@ -1,11 +1,7 @@
 import java.io.IOException;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
-
 import javax.print.attribute.standard.DateTimeAtCompleted;
-
 
 public class StockUtil {
 
@@ -19,38 +15,25 @@ public class StockUtil {
 		stockRanker rankbot = new stockRanker();
 		double PRICELIMIT = 25.0;
 		int MAXURL = 20;
-		int END_HOUR = 22;
-		int END_MINUTE = 45;
-		int SLEEPTIME = 30000;
-		Calendar currentCal = Calendar.getInstance(TimeZone.getTimeZone("CST"));		
+		int END_HOUR = 15;
+		int END_MINUTE = 00;
+		int SLEEPTIME = 900000;
 		//get a object of utils class 
 		Utils utilInst = new Utils();
 		UrlCreator  urlbot = new UrlCreator();
 		//get stock data from the csv file 
 		int run =0;
+		int hour, minute;
 		NasdaqStocks = utilInst.extractStockDatafromFile(fname,PRICELIMIT);
 		// 
-		int hour=0;
-		int minute;
 		int run_exception=1;
-		int count=0;
 		while(run_exception==1)
 		{
-			 hour= LocalDateTime.now().getHour();
-			 minute= LocalDateTime.now().getMinute();
-			 System.out.println("runcount "+ count);
-			 System.out.println("Hour "+ hour+ " minute"+minute);
+			hour= LocalDateTime.now().getHour();
+			minute= LocalDateTime.now().getMinute();
 			if(NasdaqStocks.size() < 1)
-			{	
-				try{
-					System.out.println("ERROR: No stock data read from csv file " + fname);
-					throw new RuntimeException("Error while reading file..Exiting");
-				}catch(RuntimeException e){
-					System.out.println(e.getMessage());
-					e.printStackTrace();
-					break;
-				}
-				
+			{
+				System.out.println("ERROR: No stock data read from csv file " + fname);
 			}
 			else
 			{
@@ -70,13 +53,18 @@ public class StockUtil {
 					for(int k =0; k<URLlist.size();k++)
 					{
 						String YahooJSONdata = yahooBot.getXMLDatforURL(URLlist.get(k), 0);
-						System.out.println(YahooJSONdata);
-						rankbot.updateStockfromJSON(YahooJSONdata,run,NasdaqStocks);
+						//System.out.println(YahooJSONdata);
+						if(YahooJSONdata != null)
+						{
+							rankbot.updateStockfromJSON(YahooJSONdata,run,NasdaqStocks);
+						}
 					}
 				}
 			}
-			if(hour > END_HOUR && minute > END_MINUTE)
+			if(hour > END_HOUR ||(hour == END_HOUR && minute > END_MINUTE))
 			{
+				System.out.print("System Time "+ hour + ":" + minute + " Terminating program");
+				databot.EndofDayReport(NasdaqStocks);
 				break;
 			}
 			else
@@ -85,7 +73,7 @@ public class StockUtil {
 				run++;
 				try 
 				{
-					System.out.println("Putting thread to sleep");
+					System.out.print("System Time "+ hour + ":" + minute +"\tPutting thread to sleep for " + SLEEPTIME+ " milliseconds");
 					Thread.sleep(SLEEPTIME);
 				}
 				catch(InterruptedException ex)

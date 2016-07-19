@@ -11,6 +11,12 @@ public class Stock {
 	public int stockRank;
 	public double  stockPerRank;
 	public int stockAlert;
+	public int run_rank_3;
+	public double price_rank_3;
+	public int reached_rank_3;
+	public int run_rank_5;
+	public double price_rank_5;
+	public int reached_rank_5;
 	
 	public Stock(String[] data)
 	{

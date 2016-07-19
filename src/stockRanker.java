@@ -20,11 +20,11 @@ public class stockRanker {
 		for(String key : results.keySet())
 		{
 			String fieldValue = results.get(key);
+			double price = Double.parseDouble(fieldValue);
 			for(int i = 0; i<stockList.size(); i++)
 			{
 				if(stockList.get(i).Ticker.compareTo(key) == 0)
 				{
-					double price = Double.parseDouble(fieldValue);
 					//System.out.println("Updating stock price of "+key + " &  "+  stockList.get(i).Ticker + "to "+ price);
 					if(run == 0)
 					{
@@ -47,10 +47,20 @@ public class stockRanker {
 						double perincr = ((stockList.get(i).currentValue-stockList.get(i).lastValue)/stockList.get(i).lastValue);
 						stockList.get(i).stockPerRank = stockList.get(i).stockPerRank + perincr;
 					}
-					if(stockList.get(i).stockRank > 3)
+					if(stockList.get(i).stockRank == 3 && stockList.get(i).reached_rank_3 == 0)
 					{
 						stockList.get(i).stockAlert = 1;
-					}					
+						stockList.get(i).run_rank_3 = run;
+						stockList.get(i).price_rank_3 = price;
+						stockList.get(i).reached_rank_3 = 1;
+					}
+					if(stockList.get(i).stockRank == 5 && stockList.get(i).reached_rank_5 == 0)
+					{
+						stockList.get(i).stockAlert = 1;
+						stockList.get(i).run_rank_5 = run;
+						stockList.get(i).price_rank_5 = price;
+						stockList.get(i).reached_rank_5 =1;
+					}
 				}
 			}
 		}		
